@@ -70,7 +70,7 @@ namespace EdgeRedirect
                             case "--single-argument":
                                 EdgeUrl url = EdgeCommandParser.GetUrlFromArguments(args[1]);
                                 string command;
-                                if (url.IsQuery)
+                                if (url.IsQuery && config.search_config.redirect_searches)
                                 {
                                     if (config.search_config.search_engine == Defs.SearchEngine.Default)
                                     {
@@ -121,8 +121,7 @@ namespace EdgeRedirect
 
         static void LoadConfig()
         {
-            Exception ex;
-            if (!EdgeRedirectConfig.TryLoadConfig(out config, out ex))
+            if (!EdgeRedirectConfig.TryLoadConfig(out config, out Exception ex))
             {
                 MessageBox.Show("Could not load configuration. You may not have run the configuration tool yet.\r\n\r\nClick OK to open the configuration tool.\r\n\r\nError: " + ex.Message, Config.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 StartConfigGUI();

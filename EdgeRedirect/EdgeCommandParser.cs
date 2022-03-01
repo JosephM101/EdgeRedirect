@@ -31,8 +31,7 @@ namespace EdgeRedirect
 
         static EdgeUrl FixEdgeEncodedUrl(string url)
         {
-            string final;
-            final = url.Replace("https%3A%2F%2F", "https://");
+            string final = url.Replace("https%3A%2F%2F", "https://");
             if (final.Contains("%2Fsearch%3Fq%3D"))
             {
                 // This is a search query; fix it up
@@ -43,10 +42,10 @@ namespace EdgeRedirect
                 int beforeQuery = final.IndexOf("search?q=") + "search?q=".Length;
                 int afterQuery = final.IndexOf("%26form");
                 
-                //string after_query = final.Substring(final.IndexOf("search?q=") + "search?q=".Length, final.IndexOf("%26form"));
+                // string after_query = final.Substring(final.IndexOf("search?q=") + "search?q=".Length, final.IndexOf("%26form"));
                 string query = final.Substring(beforeQuery, afterQuery - beforeQuery);
-                //final = final.Substring(endIndex + 1);
-                //final = query;
+                // final = final.Substring(endIndex + 1);
+                // final = query;
                 final = HttpUtility.UrlDecode(final.Replace(query, "")).Insert(beforeQuery, query.Replace(Defs.UrlEncodeKeys["+"], "+"));
                 return new EdgeUrl(final, true, HttpUtility.UrlDecode(query).Replace("+", " "));
             }
@@ -64,15 +63,13 @@ namespace EdgeRedirect
              * Parsed URL: https://www.bing.com/search?q=duckduckgo+search+engine&form=WSBEDG&qs=LS&cvid=0d031794184c46e2ba1b9150dcabb9c4&pq=duckduckgo&cc=US&setlang=en-US&nclid=3EFD95B504A17A976E6E53DC65FE1B0A&ts=1645989532388&wsso=Moderate
              */
 
-            string rawUrl = "";
+            string rawUrl;
             string single_argument = arguments.Substring(arguments.IndexOf("--single-argument") + "--single-argument".Length);
 
             // Remove the "microsoft-edge:" prefix
             single_argument = single_argument.Substring(single_argument.IndexOf(":") + 1);
-
             // Remove the "?launchContext1=" prefix
             single_argument = single_argument.Substring(single_argument.IndexOf("?") + 1);
-
             // Remove the "url=" prefix
             rawUrl = single_argument.Substring(single_argument.IndexOf("&url=") + 5);
 
