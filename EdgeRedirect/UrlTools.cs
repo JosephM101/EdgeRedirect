@@ -155,7 +155,7 @@ namespace UrlTools
         public static string GetDomain(string url)
         {
             // Get the domain of a URL
-            string domain = "";
+            string domain;
             if (url.Contains("http://"))
             {
                 domain = url.Substring(7);
@@ -334,7 +334,7 @@ namespace UrlTools
         public static string EncodeSearchQuery(string searchQuery, Defs.SearchEngine searchEngine)
         {
             // Convert unsupported characters to their URL-encoded equivalents
-            string formattedQuery = "";
+            string formattedQuery;
             
             // for (int i = 0; i < searchQuery.Length; i++)
             // {
@@ -351,7 +351,7 @@ namespace UrlTools
 
             formattedQuery = HttpUtility.UrlEncode(searchQuery);
 
-            string encoded = "";
+            string encoded;
             switch (searchEngine)
             {
                 case Defs.SearchEngine.DuckDuckGo:

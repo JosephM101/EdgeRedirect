@@ -30,11 +30,13 @@ namespace EdgeRedirect
     {
         static void StartConfigGUI()
         {
-            string configGui_path = "edgeredirect_config.exe";
+            string configGui_path = Config.ConfigGui_ExeName;
             if (File.Exists(configGui_path))
             {
-                ProcessStartInfo psi = new ProcessStartInfo(configGui_path);
-                psi.UseShellExecute = true;
+                ProcessStartInfo psi = new ProcessStartInfo(configGui_path)
+                {
+                    UseShellExecute = true
+                };
                 Process.Start(psi);
             }
         }
@@ -53,8 +55,9 @@ namespace EdgeRedirect
                 {
                     // Print version information. Can be used for verification to check if the msedge.exe file is not the original Microsoft Edge executable.
                     string assemblyTitle = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyTitleAttribute>().Title;
-                    string versionString = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                    Console.WriteLine(String.Format("{0} v{1}", assemblyTitle, versionString));
+                    //string versionString = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                    string versionString = "1.0.0";
+                    MessageBox.Show(String.Format("{0} v{1}", assemblyTitle, versionString));
                 }
                 else
                 {
@@ -66,7 +69,7 @@ namespace EdgeRedirect
                             // Arguments passed to Edge typically have "--single-argument" as the first argument if opening a link. Everything in the second argument is what we need.
                             case "--single-argument":
                                 EdgeUrl url = EdgeCommandParser.GetUrlFromArguments(args[1]);
-                                string command = "";
+                                string command;
                                 if (url.IsQuery)
                                 {
                                     if (config.search_config.search_engine == Defs.SearchEngine.Default)
@@ -87,15 +90,13 @@ namespace EdgeRedirect
                                 Process.Start(browser_exePath, command);
                                 break;
                             default:
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("ERROR: Unrecognized or invalid argument.");
-                                Console.ResetColor();
+                                MessageBox.Show("ERROR: Unrecognized or invalid argument.", Config.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 break;
                         }
                     }
                     else
                     {
-                        MessageBox.Show("Could not find/open the specified browser. Please check your configuration.\r\n\r\nClick OK to open the configuration tool.", "EdgeRedirect", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Could not find/open the specified browser. Please check your configuration.\r\n\r\nClick OK to open the configuration tool.", Config.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         StartConfigGUI();
                         Environment.Exit(1);
                     }
@@ -111,18 +112,19 @@ namespace EdgeRedirect
             LoadConfig();
         }
 
-        static void testParse()
-        {
-            string url = EdgeCommandParser.GetUrlFromArguments("--single-argument microsoft-edge:?launchContext1=Microsoft.Windows.Search_cw5n1h2txyewy&url=https%3A%2F%2Fwww.bing.com%2Fsearch%3Fq%3DC%23%2B%26%2Bduckduckgo%2Bsearch%2Bengine%26form%3DWSBEDG%26qs%3DLS%26cvid%3D0d031794184c46e2ba1b9150dcabb9c4%26pq%3Dduckduckgo%26cc%3DUS%26setlang%3Den-US%26nclid%3D3EFD95B504A17A976E6E53DC65FE1B0A%26ts%3D1645989532388%26nclidts%3D1645989532%26tsms%3D388%26wsso%3DModerate").Url;
-            Console.WriteLine(url);
-            Thread.Sleep(5000);
-        }
+        // static void testParse()
+        // {
+        //     string url = EdgeCommandParser.GetUrlFromArguments("--single-argument microsoft-edge:?launchContext1=Microsoft.Windows.Search_cw5n1h2txyewy&url=https%3A%2F%2Fwww.bing.com%2Fsearch%3Fq%3DC%23%2B%26%2Bduckduckgo%2Bsearch%2Bengine%26form%3DWSBEDG%26qs%3DLS%26cvid%3D0d031794184c46e2ba1b9150dcabb9c4%26pq%3Dduckduckgo%26cc%3DUS%26setlang%3Den-US%26nclid%3D3EFD95B504A17A976E6E53DC65FE1B0A%26ts%3D1645989532388%26nclidts%3D1645989532%26tsms%3D388%26wsso%3DModerate").Url;
+        //     Console.WriteLine(url);
+        //     Thread.Sleep(5000);
+        // }
 
         static void LoadConfig()
         {
-            if (!EdgeRedirectConfig.TryLoadConfig(out config))
+            Exception ex;
+            if (!EdgeRedirectConfig.TryLoadConfig(out config, out ex))
             {
-                MessageBox.Show("Could not load configuration. You may not have run the configuration tool yet.\r\n\r\nClick OK to open the configuration tool.", "EdgeRedirect", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not load configuration. You may not have run the configuration tool yet.\r\n\r\nClick OK to open the configuration tool.\r\n\r\nError: " + ex.Message, Config.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 StartConfigGUI();
                 Environment.Exit(1);
             }

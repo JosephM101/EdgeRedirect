@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,6 +18,76 @@ namespace EdgeRedirect
         public static string RenamedEdgePath = EdgeInstallationDir + "_msedge.exe";
         public static string ConfigFilename = "config.json";
         public static string ConfigPath = EdgeInstallationDir + ConfigFilename;
+
+        public static string ConfigGui_ExeName = "edgeredirect_config.exe";
+        // public static string AppName = "EdgeRedirect";
+        public static string AppName = AssemblyProduct;
+
+        #region Assembly Info
+        public static string AssemblyTitle
+        {
+            get
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                if (attributes.Length > 0)
+                {
+                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                    if (titleAttribute.Title != "")
+                    {
+                        return titleAttribute.Title;
+                    }
+                }
+                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+            }
+        }
+
+        public static string AssemblyVersion
+        {
+            get
+            {
+                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+        }
+
+        public static string AssemblyDescription
+        {
+            get
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return "";
+                }
+                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+            }
+        }
+
+        public static string AssemblyProduct
+        {
+            get
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return "";
+                }
+                return ((AssemblyProductAttribute)attributes[0]).Product;
+            }
+        }
+
+        public static string AssemblyCopyright
+        {
+            get
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return "";
+                }
+                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+            }
+        }
+        #endregion
     }
 
     public class EdgeRedirectConfigModel
@@ -40,14 +111,15 @@ namespace EdgeRedirect
             return JsonConvert.DeserializeObject<EdgeRedirectConfigModel.Root>(File.ReadAllText(Config.ConfigPath));
         }
 
-        public static bool TryLoadConfig(out EdgeRedirectConfigModel.Root config, bool returnNewOnError = false)
+        public static bool TryLoadConfig(out EdgeRedirectConfigModel.Root config, out Exception err, bool returnNewOnError = false)
         {
             try
             {
                 config = JsonConvert.DeserializeObject<EdgeRedirectConfigModel.Root>(File.ReadAllText(Config.ConfigPath));
+                err = null;
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 if (returnNewOnError)
                 {
@@ -57,6 +129,7 @@ namespace EdgeRedirect
                 {
                     config = null;
                 }
+                err = ex;
                 return false;
             }
         }
