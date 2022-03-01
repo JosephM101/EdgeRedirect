@@ -97,9 +97,9 @@ namespace EdgeRedirect_Installer
                     catch { }
                 }
 
-                if (AskQuestion("To ensure everything works properly, it is recommended that you restart your computer. Would you like to restart now?", false, DefaultOption.Yes))
+                if (AskQuestion("To ensure everything works properly, it is recommended that you restart your computer.\r\nWould you like to restart now?", false, DefaultOption.Yes))
                 {
-                    Process.Start("cmd", "/C shutdown /s /t 0");
+                    Process.Start("cmd", "/C shutdown /r /t 0");
                 }
             }
             catch (Exception ex)
