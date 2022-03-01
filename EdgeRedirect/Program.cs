@@ -63,17 +63,28 @@ namespace EdgeRedirect
                     {
                         switch (args[0])
                         {
-                            // Arguments passed to Edge typically have "--single-argument" as the first argument. Everything in the second argument is what we need.
+                            // Arguments passed to Edge typically have "--single-argument" as the first argument if opening a link. Everything in the second argument is what we need.
                             case "--single-argument":
                                 EdgeUrl url = EdgeCommandParser.GetUrlFromArguments(args[1]);
+                                string command = "";
                                 if (url.IsQuery)
                                 {
-                                    Process.Start(browser_exePath, String.Format("\"? {0}\"", url.Query));
+                                    if (config.search_config.search_engine == Defs.SearchEngine.Default)
+                                    {
+                                        // Use the browser's default
+                                        command = String.Format("\"? {0}\"", url.Query);
+                                    }
+                                    else
+                                    {
+                                        // Use the specified search engine
+                                        command = UrlEncoder.EncodeSearchQuery(url.Query, config.search_config.search_engine);
+                                    }
                                 }
                                 else
                                 {
-                                    Process.Start(browser_exePath, String.Format("\"{0}\"", url.Url));
+                                    command = String.Format("\"{0}\"", url.Url);
                                 }
+                                Process.Start(browser_exePath, command);
                                 break;
                             default:
                                 Console.ForegroundColor = ConsoleColor.Red;

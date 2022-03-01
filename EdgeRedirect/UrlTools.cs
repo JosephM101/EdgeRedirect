@@ -333,20 +333,23 @@ namespace UrlTools
         // Convert search query to a search URL using the specified search engine
         public static string EncodeSearchQuery(string searchQuery, Defs.SearchEngine searchEngine)
         {
-            // Convert unsupported URL characters to their URL-encoded equivalents
+            // Convert unsupported characters to their URL-encoded equivalents
             string formattedQuery = "";
-            for (int i = 0; i < searchQuery.Length; i++)
-            {
-                // Use UrlEncodeKeys to convert unsupported characters to their URL-encoded equivalents
-                if (Defs.UrlEncodeKeys.ContainsKey(searchQuery[i].ToString()))
-                {
-                    formattedQuery += Defs.UrlEncodeKeys[searchQuery[i].ToString()];
-                }
-                else
-                {
-                    formattedQuery += searchQuery[i];
-                }
-            }
+            
+            // for (int i = 0; i < searchQuery.Length; i++)
+            // {
+            //     // Use UrlEncodeKeys to convert unsupported characters to their URL-encoded equivalents
+            //     if (Defs.UrlEncodeKeys.ContainsKey(searchQuery[i].ToString()))
+            //     {
+            //         formattedQuery += Defs.UrlEncodeKeys[searchQuery[i].ToString()];
+            //     }
+            //     else
+            //     {
+            //         formattedQuery += searchQuery[i];
+            //     }
+            // }
+
+            formattedQuery = HttpUtility.UrlEncode(searchQuery);
 
             string encoded = "";
             switch (searchEngine)
