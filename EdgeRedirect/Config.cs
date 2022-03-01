@@ -13,9 +13,28 @@ namespace EdgeRedirect
 {
     public static class Config
     {
-        public static string EdgeInstallationDir = @"C:\Program Files (x86)\Microsoft\Edge\Application\";
-        public static string EdgeInstallationPath = EdgeInstallationDir + "msedge.exe";
-        public static string RenamedEdgePath = EdgeInstallationDir + "_msedge.exe";
+        private static string ms_root = @"C:\Program Files (x86)\Microsoft\";
+        public static string EdgeInstallationDir = ms_root + @"Edge\Application\";
+
+        public static string OriginalEdgeFilename = "msedge.exe";
+        public static string RenamedEdgeFilename = "_msedge.exe";
+
+        public static string EdgeInstallationPath = EdgeInstallationDir + OriginalEdgeFilename;
+        public static string EdgeInstallationPath_Renamed = EdgeInstallationDir + RenamedEdgeFilename;
+
+        public static string[] EdgeAppDirs =
+        {
+            ms_root + "EdgeCore",
+            ms_root + "EdgeUpdate",
+            ms_root + "EdgeWebView"
+        };
+        public static string[] EdgeAppDirs_Moved =
+        {
+            ms_root + "_EdgeCore",
+            ms_root + "_EdgeUpdate",
+            ms_root + "_EdgeWebView"
+        };
+
         public static string ConfigFilename = "config.json";
         public static string ConfigPath = EdgeInstallationDir + ConfigFilename;
 

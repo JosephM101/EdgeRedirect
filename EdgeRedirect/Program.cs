@@ -33,14 +33,14 @@ namespace EdgeRedirect
             string configGui_path = Config.ConfigGui_ExeName;
             if (File.Exists(configGui_path))
             {
-                ProcessStartInfo psi = new ProcessStartInfo(configGui_path)
+                try
                 {
-                    UseShellExecute = true
-                };
-                Process.Start(psi);
+                    Process.Start(configGui_path);
+                }
+                catch { }
             }
         }
-
+        
         static EdgeRedirectConfigModel.Root config;
 
         [STAThread]

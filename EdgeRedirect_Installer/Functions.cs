@@ -103,5 +103,20 @@ namespace EdgeRedirect_Installer
         //     Console.Write(String.Format("{0} [{1}]: ", prompt, hasDefaultOption ? "y/n" : (defaultOption ? "Y/n" : "y/N")));
         //     Console.WriteLine(Console.ReadLine());
         // }
+
+        internal static void Exit(int code)
+        {
+            Console.ResetColor();
+            Console.WriteLine("Exiting...");
+            Environment.Exit(code);
+        }
+
+        internal static void Failed(Exception ex)
+        {
+            WriteLine(ex.Message, ConsoleColor.Red);
+            Console.Write("Process failed. Press Enter to exit.");
+            Console.ReadLine();
+            Exit(0);
+        }
     }
 }
