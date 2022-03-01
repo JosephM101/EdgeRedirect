@@ -3,11 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using UrlTools;
 
 namespace EdgeRedirect
 {
     internal static class EdgeCommandParser
     {
+        static string FixEdgeEncodedUrl(string url)
+        {
+            string final;
+            final = url.Replace("https%3A%2F%2F", "https://");
+            if (final.Contains("%2Fsearch%3Fq%3D"))
+            {
+                // This is a search query; fix it up
+                final = final.Replace("%2Fsearch%3Fq%3D", "/search?q=");
+                // Stop once we get to "%26form"
+                
+                // Get length of search query
+                int beforeQuery = final.IndexOf("search?q=") + "search?q=".Length;
+                int afterQuery = final.IndexOf("%26form");
+                
+                //string after_query = final.Substring(final.IndexOf("search?q=") + "search?q=".Length, final.IndexOf("%26form"));
+                string query = final.Substring(beforeQuery, afterQuery - beforeQuery);
+                //final = final.Substring(endIndex + 1);
+                //final = query;
+                final = HttpUtility.UrlDecode(final.Replace(query, "")).Insert(beforeQuery, query.Replace(Defs.UrlEncodeKeys["+"], "+"));
+            }
+            else
+            {
+                final = HttpUtility.UrlPathEncode(HttpUtility.UrlDecode(final));
+            }
+            return final;
+        }
+
         internal static string GetUrlFromArguments(string arguments)
         {
             /* Example argument:
@@ -28,21 +57,26 @@ namespace EdgeRedirect
             // Remove the "url=" prefix
             rawUrl = single_argument.Substring(single_argument.IndexOf("&url=") + 5);
 
-            // Parse the URL by converting the %xx hexadecimal characters to their equivalent character
-            for (int i = 0; i < rawUrl.Length; i++)
-            {
-                if (rawUrl[i] == '%')
-                {
-                    parsedUrl += (char)Convert.ToInt32(rawUrl.Substring(i + 1, 2), 16);
-                    i += 2;
-                }
-                else
-                {
-                    parsedUrl += rawUrl[i];
-                }
-            }
+            rawUrl = FixEdgeEncodedUrl(rawUrl);
 
-            return UrlDecoder.DecodeUrl(parsedUrl);
+            // Parse the URL by converting the %xx hexadecimal characters to their equivalent character
+            // for (int i = 0; i < rawUrl.Length; i++)
+            // {
+            //     if (rawUrl[i] == '%')
+            //     {
+            //         parsedUrl += (char)Convert.ToInt32(rawUrl.Substring(i + 1, 2), 16);
+            //         i += 2;
+            //     }
+            //     else
+            //     {
+            //         parsedUrl += rawUrl[i];
+            //     }
+            // }
+
+            parsedUrl = rawUrl;
+
+            //return UrlDecoder.DecodeUrl(parsedUrl);
+            return parsedUrl;
         }
     }
 }

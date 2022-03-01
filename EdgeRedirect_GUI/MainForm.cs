@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
+using UrlTools;
 
 namespace EdgeRedirect_GUI
 {
@@ -56,9 +57,9 @@ namespace EdgeRedirect_GUI
 
             checkBox_redirectSearchesSetting.Checked = config.search_config.redirect_searches;
 
-            comboBox_redirectSearches_searchEngine.Items.AddRange(EdgeRedirect.Defs.SearchEngines.Values.ToArray());
+            comboBox_redirectSearches_searchEngine.Items.AddRange(Defs.SearchEngines.Values.ToArray());
             string selectedEngine = "";
-            EdgeRedirect.Defs.SearchEngines.TryGetValue(config.search_config.search_engine, out selectedEngine);
+            Defs.SearchEngines.TryGetValue(config.search_config.search_engine, out selectedEngine);
             comboBox_redirectSearches_searchEngine.SelectedItem = selectedEngine;
 
             ForceBringToFront();
@@ -123,7 +124,7 @@ namespace EdgeRedirect_GUI
 
         private void comboBox_redirectSearches_searchEngine_SelectedIndexChanged(object sender, EventArgs e)
         {
-            config.search_config.search_engine = EdgeRedirect.Defs.SearchEngines.FirstOrDefault(x => x.Value == comboBox_redirectSearches_searchEngine.Text).Key;
+            config.search_config.search_engine = Defs.SearchEngines.FirstOrDefault(x => x.Value == comboBox_redirectSearches_searchEngine.Text).Key;
         }
 
         private void checkBox_redirectSearchesSetting_CheckedChanged(object sender, EventArgs e)
