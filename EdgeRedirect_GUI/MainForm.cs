@@ -17,7 +17,7 @@ namespace EdgeRedirect_GUI
     public partial class MainForm : Form
     {
         WebBrowser[] WebBrowsers;
-        string configPath = EdgeRedirect.Config.ConfigPath;
+        readonly string configPath = EdgeRedirect.Config.ConfigPath;
         EdgeRedirect.EdgeRedirectConfigModel.Root config;
 
         public bool cancel = false;
@@ -150,31 +150,17 @@ namespace EdgeRedirect_GUI
 
     public class WebBrowser
     {
-        string _BrowserName = "";
-        string _ExecPath = "";
+        public string BrowserName { get; internal set; }
+        public string ExecPath { get; internal set; }
 
-        public WebBrowser(string BrowserName, string ExecPath)
+        public WebBrowser(string browserName, string execPath)
         {
-            _BrowserName = BrowserName;
-            _ExecPath = ExecPath;
-        }
-        public string BrowserName
-        {
-            get
-            {
-                return _BrowserName;
-            }
-        }
-        public string ExecPath
-        {
-            get
-            {
-                return _ExecPath;
-            }
+            BrowserName = browserName;
+            ExecPath = execPath;
         }
         public override string ToString()
         {
-            return _BrowserName;
+            return BrowserName;
         }
     }
 }

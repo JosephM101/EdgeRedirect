@@ -64,15 +64,13 @@ namespace EdgeRedirect
              * Parsed URL: https://www.bing.com/search?q=duckduckgo+search+engine&form=WSBEDG&qs=LS&cvid=0d031794184c46e2ba1b9150dcabb9c4&pq=duckduckgo&cc=US&setlang=en-US&nclid=3EFD95B504A17A976E6E53DC65FE1B0A&ts=1645989532388&wsso=Moderate
              */
 
-            string rawUrl = "";
+            string rawUrl;
             string single_argument = arguments.Substring(arguments.IndexOf("--single-argument") + "--single-argument".Length);
 
             // Remove the "microsoft-edge:" prefix
             single_argument = single_argument.Substring(single_argument.IndexOf(":") + 1);
-
             // Remove the "?launchContext1=" prefix
             single_argument = single_argument.Substring(single_argument.IndexOf("?") + 1);
-
             // Remove the "url=" prefix
             rawUrl = single_argument.Substring(single_argument.IndexOf("&url=") + 5);
 
