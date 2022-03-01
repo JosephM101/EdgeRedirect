@@ -65,21 +65,54 @@ namespace EdgeRedirect_GUI
             ForceBringToFront();
         }
 
+        WebBrowser[] GetBrowsersInRegkey (RegistryKey browserKeys)
+        {
+            List<WebBrowser> webBrowsers = new List<WebBrowser>();
+            string[] browserNames = browserKeys.GetSubKeyNames();
+            List<string> NamesToIgnore = new List<string>()
+            {
+                "VMWAREHOSTOPEN",
+                "Microsoft Edge"
+            };
+
+            for (int i = 0; i < browserNames.Length; i++)
+            {
+                if (!browserNames[i].ContainsAny(NamesToIgnore.ToArray()))
+                {
+                    RegistryKey browserKey = browserKeys.OpenSubKey(browserNames[i]);
+                    RegistryKey browserKeyPath = browserKey.OpenSubKey(@"shell\open\command");
+                    webBrowsers.Add(new WebBrowser((string)browserKey.GetValue(null), browserKeyPath.GetValue(null).ToString().StripQuotes()));
+                }
+            }
+            return webBrowsers.ToArray();
+        }
+
         WebBrowser[] GetAllWebBrowsers()
         {
             RegistryKey browserKeys;
+            RegistryKey localBrowserKeys = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Clients\StartMenuInternet");
             List<WebBrowser> webBrowsers = new List<WebBrowser>();
 
             browserKeys = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
             if (browserKeys == null)
                 browserKeys = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Clients\StartMenuInternet");
-            string[] browserNames = browserKeys.GetSubKeyNames();
-            for (int i = 0; i < browserNames.Length; i++)
+
+            webBrowsers.AddRange(GetBrowsersInRegkey(browserKeys));
+            webBrowsers.AddRange(GetBrowsersInRegkey(localBrowserKeys));
+
+            // Find and delete duplicates
+            for (int i = 0; i < webBrowsers.Count; i++)
             {
-                RegistryKey browserKey = browserKeys.OpenSubKey(browserNames[i]);
-                RegistryKey browserKeyPath = browserKey.OpenSubKey(@"shell\open\command");
-                webBrowsers.Add(new WebBrowser((string)browserKey.GetValue(null), browserKeyPath.GetValue(null).ToString().StripQuotes()));
+                for (int j = i + 1; j < webBrowsers.Count; j++)
+                {
+                    if (webBrowsers[i].BrowserName == webBrowsers[j].BrowserName)
+                    {
+                        webBrowsers.RemoveAt(j);
+                        j--;
+                    }
+                }
             }
+
             return webBrowsers.ToArray();
         }
 
@@ -131,6 +164,16 @@ namespace EdgeRedirect_GUI
         {
             config.search_config.redirect_searches = checkBox_redirectSearchesSetting.Checked;
         }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
     internal static class Extensions
@@ -145,6 +188,18 @@ namespace EdgeRedirect_GUI
             {
                 return s;
             }
+        }
+
+        internal static bool ContainsAny(this string src, string[] values)
+        {
+            foreach (string value in values)
+            {
+                if (src.Contains(value))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
