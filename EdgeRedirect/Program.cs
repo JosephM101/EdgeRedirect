@@ -9,7 +9,7 @@
  * The project executable replaces the default msedge executable, renaming the original to _msedge.exe
  * 
  * Notes:
- * The queries to the browser (including searches made through Windows Search/Cortana) were found to have originated from the Shell Experience Host process. This may not always be the case; more experimentation needs to be done.
+ * The queries to the browser (including searches made through Windows Search/Cortana) were found to have originated from the Shell Infrastructure Host (sihost.exe) process. This may not always be the case; more experimentation needs to be done.
  */
 
 using System;
@@ -21,6 +21,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UrlTools;
+using static EdgeRedirect.EdgeCommandParser;
 
 namespace EdgeRedirect
 {
@@ -39,14 +41,10 @@ namespace EdgeRedirect
 
         static EdgeRedirectConfigModel.Root config;
 
+        [STAThread]
         static void Main(string[] args)
         {
-            if (!EdgeRedirectConfig.TryLoadConfig(out config))
-            {
-                MessageBox.Show("Could not load configuration. You may not have run the configuration tool yet.\r\n\r\nClick OK to open the configuration tool.", "EdgeRedirect", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                StartConfigGUI();
-                Environment.Exit(1);
-            }
+            Begin();
 
             // Check for arguments
             if (args.Length > 0)
@@ -67,11 +65,15 @@ namespace EdgeRedirect
                         {
                             // Arguments passed to Edge typically have "--single-argument" as the first argument. Everything in the second argument is what we need.
                             case "--single-argument":
-                                string parsed = EdgeCommandParser.GetUrlFromArguments(args[1]);
-                                Process process = new Process();
-                                process.StartInfo.FileName = browser_exePath;
-                                process.StartInfo.Arguments = parsed;
-                                process.Start();
+                                EdgeUrl url = EdgeCommandParser.GetUrlFromArguments(args[1]);
+                                if (url.IsQuery)
+                                {
+                                    Process.Start(browser_exePath, String.Format("\"? {0}\"", url.Query));
+                                }
+                                else
+                                {
+                                    Process.Start(browser_exePath, String.Format("\"{0}\"", url.Url));
+                                }
                                 break;
                             default:
                                 Console.ForegroundColor = ConsoleColor.Red;
@@ -88,10 +90,30 @@ namespace EdgeRedirect
                     }
                 }
             }
-            else
+        }
+
+        static void Begin()
+        {
+            // Things to do before "the main course"
+
+            // testParse();
+            LoadConfig();
+        }
+
+        static void testParse()
+        {
+            string url = EdgeCommandParser.GetUrlFromArguments("--single-argument microsoft-edge:?launchContext1=Microsoft.Windows.Search_cw5n1h2txyewy&url=https%3A%2F%2Fwww.bing.com%2Fsearch%3Fq%3DC%23%2B%26%2Bduckduckgo%2Bsearch%2Bengine%26form%3DWSBEDG%26qs%3DLS%26cvid%3D0d031794184c46e2ba1b9150dcabb9c4%26pq%3Dduckduckgo%26cc%3DUS%26setlang%3Den-US%26nclid%3D3EFD95B504A17A976E6E53DC65FE1B0A%26ts%3D1645989532388%26nclidts%3D1645989532%26tsms%3D388%26wsso%3DModerate").Url;
+            Console.WriteLine(url);
+            Thread.Sleep(5000);
+        }
+
+        static void LoadConfig()
+        {
+            if (!EdgeRedirectConfig.TryLoadConfig(out config))
             {
-                // Assume the user wants to open Edge
-                // Check if the renamed executable exists
+                MessageBox.Show("Could not load configuration. You may not have run the configuration tool yet.\r\n\r\nClick OK to open the configuration tool.", "EdgeRedirect", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                StartConfigGUI();
+                Environment.Exit(1);
             }
         }
     }

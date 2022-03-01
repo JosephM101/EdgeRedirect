@@ -24,7 +24,9 @@ namespace UrlTools
             // [Description("Bing")]
             Bing = 3,
             // [Description("Unknown")]
-            Unknown = 4
+            Unknown = 4,
+            // [Description("Use browser default")]
+            Default = 5
         }
 
         public static Dictionary<Defs.SearchEngine, string> SearchEngines = new Dictionary<Defs.SearchEngine, string>()
@@ -32,6 +34,7 @@ namespace UrlTools
             {Defs.SearchEngine.DuckDuckGo, "DuckDuckGo"},
             {Defs.SearchEngine.Google, "Google"},
             {Defs.SearchEngine.Yahoo, "Yahoo!"},
+            {Defs.SearchEngine.Default, "Use browser default"},
             //{Defs.SearchEngine.Bing, "Bing"}
         };
 
