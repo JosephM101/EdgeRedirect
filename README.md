@@ -22,7 +22,9 @@ To configure what browser to redirect requests to, go to the installation direct
 
 # An unfortunate announcement
 While debugging on Windows 11, I noticed a huge bug that broke the entire workaround.
+
 While this workaround does work, it is rendered ineffective either after a system restart, or after the `sihost.exe` process is restarted. This issue is especially evident, for example, when attempting to open a link from Cortana. Absolutely nothing will happen. I have reason to believe that there is some sort of verification process tied to the `sihost.exe` process that checks if the Microsoft Edge executable is in fact valid.
+
 Being a student in high school, I simply do not have the time to debug and resolve this issue. Furthermore, because I don’t know the definite cause of the issue, I don’t know what to look for or debug. I likely will not make any progress on this project for a while.
 
 If any of you are willing to dig in and figure out what’s causing the issue, I would very much appreciate it if you submitted your findings as an issue. Anybody that does contribute to this project will be mentioned in the project credits. A huge thanks to anybody who contributes fixes/code!
